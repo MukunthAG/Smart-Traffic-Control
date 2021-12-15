@@ -18,8 +18,9 @@ G.add_nodes_from(out_nodes)
 
 node_attrs = [G.nodes[node] for node in G.nodes]
 init_color_map = [node_dict["color"] for node_dict in node_attrs]
+edge_bunch = create_edges_trial(G)
 
-Pretty(init_color_map)
+G.add_edges_from(edge_bunch)
 
 shape = nx.spring_layout(G)
 nx.draw(G, pos = shape, with_labels = True, node_color = init_color_map)
