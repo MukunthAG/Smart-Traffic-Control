@@ -41,11 +41,14 @@ def updater(t):
     """
     READ the global variables: G, shape, node_color
     MODIFY (So, UPDATE) the global variables: pframe_opa, pframe_sig
+
+    Its okay to get out of the scope because we are "Changing" only two variables
+
     """
     global pframe_opa
     global pframe_sig
 
-
+    
     nx.draw(G, pos = shape, node_color = node_color_map, alpha = opacities, edge_color = signals, with_labels = True)
 
 anim_window, ax = plt.subplot()
