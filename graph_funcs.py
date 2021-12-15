@@ -42,6 +42,7 @@ def lane_nodes(n, direction):
             "color": "pink",
             "direction": direction,
             "lane_group" : current_lane_group,
+            "density": 1
         }
         if direction == "I":
             node_attributes["flow_rate"] = inflow_rate_gen(n, current_lane_group)
