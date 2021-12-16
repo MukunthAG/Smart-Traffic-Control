@@ -1,6 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+from matplotlib.animation import FuncAnimation as animate
 import numpy as np
 from graph_funcs import *
 
@@ -46,7 +46,6 @@ def updater(t, shape, ax):
 
     # TESTING READ
     flow_rates = extract_values("flow_rate", node_attrs)
-    # Pretty(flow_rates)
 
     # TESTING WRITE
     cur_node_attrs = pf_node_attrs
@@ -65,24 +64,22 @@ def updater(t, shape, ax):
     
     opacities = extract_values("density", cur_node_attrs)
 
-    nx.draw_networkx(G, pos = shape, node_color = node_color_map, alpha = opacities)
-    # nx.draw_networkx_labels(G, shape)
-    # nx.draw_networkx_edges(G, shape)
+    nx.draw_networkx_nodes(G, pos = shape, node_color = node_color_map, alpha = opacities)
+    nx.draw_networkx_labels(G, shape)
+    nx.draw_networkx_edges(G, shape)
+
     ax.set_title("Frame {}".format(t))
     pf_node_attrs = cur_node_attrs
     pf_edge_attrs = cur_edge_attrs
 
-# fig, ax = plt.subplots(figsize=(6,4))
-fig, ax = plt.subplots()
+anim_window, anim_axes = plt.subplots()
 anim_setup = {
-    "fig": fig,
-    "frames": np.arange(0, 30, 0.01),
-    "interval": 10
+    "fig": anim_window,
+    "frames": np.arange(0,30,0.5),
+    "interval": 500,
+    "fargs" : (shape, anim_axes)
 }
-anim_data = FuncAnimation(fig, func = updater, frames = np.arange(0,30,0.5), interval = 500, fargs= (shape, ax))
-# anim_data = FuncAnimation(fig, func = updater, frames = np.arange(0,30), interval = 500, fargs=(ax))
-# anim_data = animate(func = updater, **anim_setup)
+anim_data = animate(func = updater, **anim_setup)
 anim_data.save('sample.gif')
-nx.draw()
 
 plt.show()
