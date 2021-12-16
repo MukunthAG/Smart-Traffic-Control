@@ -2,7 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation as animate
 import numpy as np
-from graph_funcs import *
+from graph_funcs_trial import *
 
 NO_OF_MODS = None
 MAIN_LANES = 4
