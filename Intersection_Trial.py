@@ -1,6 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation as animate
+from matplotlib.animation import FuncAnimation
 import numpy as np
 from graph_funcs import *
 
@@ -25,38 +25,64 @@ G.add_edges_from(edge_bunch)
 node_attrs = [G.nodes[node] for node in G.nodes]
 edge_attrs = [G.edges[edge] for edge in G.edges]
 shape = nx.spring_layout(G)
-node_color_map = [node_dict["color"] for node_dict in node_attrs]
-
-# EXTRACTED DATA TO BE MODIFIED
-
-opacities = [node_dict["density"] for node_dict in node_attrs]
-signals = [edge_dict["color"] for edge_dict in edge_attrs]
+node_color_map = extract_values("color", node_attrs)
 
 # ANIMATION
 
-pframe_opa = opacities # Previous frame property initialized with default value
-pframe_sig = signals
+pf_node_attrs = node_attrs # Previous frame property initialized with default value
+pf_edge_attrs = edge_attrs
 
-def updater(t):
+def updater(t, shape, ax):
+    ax.clear()
     """
     READ the global variables: G, shape, node_color
-    MODIFY (So, UPDATE) the global variables: pframe_opa, pframe_sig
+    MODIFY (So, UPDATE) the global variables: pf_node_attrs, pf_edge_attrs
 
     Its okay to get out of the scope because we are "Changing" only two variables
 
     """
-    global pframe_opa
-    global pframe_sig
+    global pf_node_attrs
+    global pf_edge_attrs
 
+    # TESTING READ
+    flow_rates = extract_values("flow_rate", node_attrs)
+    # Pretty(flow_rates)
+
+    # TESTING WRITE
+    cur_node_attrs = pf_node_attrs
+    cur_edge_attrs = pf_edge_attrs
+
+    def opa_func(t, period = 10):
+        t = shrink_interval(t, period)
+        opa = None
+        if t <= 5: opa = (5 - t)/5
+        else: opa = (t - 5)/5
+        return opa
     
-    nx.draw(G, pos = shape, node_color = node_color_map, alpha = opacities, edge_color = signals, with_labels = True)
+    for node in cur_node_attrs:
+        if node["direction"] == "I":
+            node["density"] = opa_func(t)
+    
+    opacities = extract_values("density", cur_node_attrs)
 
-anim_window, ax = plt.subplot()
+    nx.draw_networkx(G, pos = shape, node_color = node_color_map, alpha = opacities)
+    # nx.draw_networkx_labels(G, shape)
+    # nx.draw_networkx_edges(G, shape)
+    ax.set_title("Frame {}".format(t))
+    pf_node_attrs = cur_node_attrs
+    pf_edge_attrs = cur_edge_attrs
+
+# fig, ax = plt.subplots(figsize=(6,4))
+fig, ax = plt.subplots()
 anim_setup = {
-    "fig": anim_window,
-    "frames": None,
-    "interval": None
+    "fig": fig,
+    "frames": np.arange(0, 30, 0.01),
+    "interval": 10
 }
-anim_data = animate(func = updater,**anim_setup)
+anim_data = FuncAnimation(fig, func = updater, frames = np.arange(0,30,0.5), interval = 500, fargs= (shape, ax))
+# anim_data = FuncAnimation(fig, func = updater, frames = np.arange(0,30), interval = 500, fargs=(ax))
+# anim_data = animate(func = updater, **anim_setup)
+anim_data.save('sample.gif')
+nx.draw()
 
 plt.show()

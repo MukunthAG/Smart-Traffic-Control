@@ -11,6 +11,16 @@ def Range(start_num, end_num):
 def Pretty(any):
     return pp.pprint(any)
 
+def shrink_interval(var, end):
+    res = None
+    if var%end == 0 and var != 0: 
+        res = end
+    elif var == 0:
+        res = 0
+    else:
+        res = var%end
+    return res
+
 #Local Functions
 
 def to_vp10ms(num): # Convert to Vehicles per 10 milliseconds
@@ -42,7 +52,8 @@ def lane_nodes(n, direction):
             "color": "pink",
             "direction": direction,
             "lane_group" : current_lane_group,
-            "density": 1
+            "density": 1,
+            "flow_rate": 0
         }
         if direction == "I":
             node_attributes["flow_rate"] = inflow_rate_gen(n, current_lane_group)
@@ -52,7 +63,7 @@ def lane_nodes(n, direction):
     return lane_nodes
 
 def mod_nodes(n, id):
-    return [(id, {"color": "yellow", "congestion": None})]
+    return [(id, {"color": "yellow", "flow_rate": 0, "congestion": None, "direction": None, "density": 1})]
 
 def create_edges_trial(G):
     edges = []
@@ -70,7 +81,12 @@ def create_edges_trial(G):
             edges.append(edge)
     return edges   
 
+def extract_values(key, dictofdict):
+    return [dict[key] for dict in dictofdict]
+
 #Testing 
 
 if TEST_MODE == 1:
-    Pretty(lane_nodes(4, "O"))
+    Pretty(shrink_interval(16.66, 10))
+    Pretty(shrink_interval(30, 10))
+    Pretty(shrink_interval(0, 10))
