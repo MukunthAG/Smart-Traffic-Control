@@ -10,18 +10,9 @@ from anim_funcs import *
 def frame_updater(t, G, anim_axes):
     anim_axes.clear()
     graph_state = PrevState.read()
-    traffic_state = graph_state["alpha"]
-    print("Before modified")
-    Pretty(graph_state["alpha"])
-    # signal_state = graph_state["edge_color"]
-    if t%2 == 0: 
-        traffic_state = [0 for alpha in traffic_state]
-    else:
-        traffic_state = [1 for alpha in traffic_state]
-    graph_state["alpha"] = traffic_state
-    print("After modified")
-    Pretty(graph_state["alpha"])
+    graph_state = current_state(graph_state)
     Draw(G, **graph_state)
+    anim_axes.set_title("Time:{}".format(t))
     PrevState.update(graph_state)
 
 # INITIALIZE GRAPH
