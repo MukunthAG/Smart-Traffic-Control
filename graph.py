@@ -7,8 +7,22 @@ from anim_funcs import *
 
 # MAIN UPDATE FUNCTION
 
-def frame_updater():
-    pass
+def frame_updater(t, G, anim_axes):
+    anim_axes.clear()
+    graph_state = PrevState.read()
+    traffic_state = graph_state["alpha"]
+    print("Before modified")
+    Pretty(graph_state["alpha"])
+    # signal_state = graph_state["edge_color"]
+    if t%2 == 0: 
+        traffic_state = [0 for alpha in traffic_state]
+    else:
+        traffic_state = [1 for alpha in traffic_state]
+    graph_state["alpha"] = traffic_state
+    print("After modified")
+    Pretty(graph_state["alpha"])
+    Draw(G, **graph_state)
+    PrevState.update(graph_state)
 
 # INITIALIZE GRAPH
 
@@ -30,21 +44,19 @@ graph_setup = {
     "font_size": 8
 }
 
-Draw(G, **graph_setup)
+PrevState.update(graph_setup)
 
 # ANIMATE GRAPH
 
-"""
 anim_window, anim_axes = plt.subplots()
 anim_setup = {
     "fig": anim_window,
     "func": frame_updater,
     "interval": FRAME_INTERVAL,
     "frames": gen_frames(),
-    "fargs" : None # For Now
+    "fargs": (G, anim_axes)
 }
 anim_data = animate(**anim_setup)
-"""
 
 # SHOW GRAPH
 
