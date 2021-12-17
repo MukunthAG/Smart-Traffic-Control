@@ -9,7 +9,7 @@ MAIN_LANES = 4
 
 # GRAPH 
 
-G = nx.Graph()
+G = nx.DiGraph()
 
 mod_node = mod_nodes(NO_OF_MODS, "M")
 in_nodes = lane_nodes(MAIN_LANES, "I")
@@ -24,7 +24,7 @@ G.add_edges_from(edge_bunch)
 
 node_attrs = [G.nodes[node] for node in G.nodes]
 edge_attrs = [G.edges[edge] for edge in G.edges]
-shape = nx.spring_layout(G)
+shape = nx.spring_layout(G, k=1)
 node_color_map = extract_values("color", node_attrs)
 
 # ANIMATION
