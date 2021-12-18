@@ -19,5 +19,17 @@ class PrevState:
     def read(self):
         return self.prev_state
 
-def current_state():
-    pass
+class CurrentState:
+    traf_state = None
+    sig_state = None
+    flow_rates = None
+
+    @classmethod
+    def fetch(self, graph_state):
+        self.traf_state = graph_state["alpha"]
+        self.sig_state = graph_state["edge_color"]
+        self.flow_rates = graph_state["flow_rates"]
+        new_state = self.new_state()
+    
+    def new_state(self):
+        pass

@@ -10,7 +10,7 @@ from anim_funcs import *
 def frame_updater(t, G, anim_axes):
     anim_axes.clear()
     graph_state = PrevState.read()
-    graph_state = current_state(graph_state)
+    graph_state = CurrentState.fetch(graph_state)
     Draw(G, **graph_state)
     anim_axes.set_title("Time:{}".format(t))
     PrevState.update(graph_state)
@@ -29,6 +29,7 @@ graph_setup = {
     "node_color": get_nvalues(G, "color"),
     "node_size": get_nvalues(G, "node_size"),
     "alpha": get_nvalues(G, "opacity"),
+    "flow_rates": get_nvalues(G, "flow_rates"),
     "edge_color": get_evalues(G, "color"),
     "width": get_evalues(G, "width"),
     "with_labels": True, 
