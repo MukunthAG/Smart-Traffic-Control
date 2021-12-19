@@ -168,7 +168,7 @@ def create_primary_edges(node_list):
                         edge_list.append(edge)
     return edge_list        
             
-def create_intersection_edges(G, node_list): # Creating MANUALY for 4 edges, may be I will automate later😪
+def create_intersection_edges(node_list): # Creating MANUALY for 4 edges, may be I will automate later😪
     edge_list = [
         ["I00", "O10"],
         ["I10", "O00"],
@@ -188,9 +188,9 @@ def create_intersection_edges(G, node_list): # Creating MANUALY for 4 edges, may
     edge_list = [tuple(edge) for edge in edge_list]
     return edge_list
 
-def create_edges(G, node_list):
+def create_edges(node_list):
     primary_edge_list = create_primary_edges(node_list)
-    intersection_edge_list = create_intersection_edges(G, node_list)
+    intersection_edge_list = create_intersection_edges(node_list)
     edge_list = primary_edge_list + intersection_edge_list
     return edge_list
 
