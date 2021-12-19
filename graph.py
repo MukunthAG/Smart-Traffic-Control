@@ -21,6 +21,7 @@ node_list = create_nodes()
 edge_list = create_edges(node_list)
 G.add_nodes_from(node_list)
 G.add_edges_from(edge_list)
+update_additional_attrs(G)
 
 graph_setup = {
     "pos": nx.kamada_kawai_layout(G),

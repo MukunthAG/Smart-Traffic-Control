@@ -1,5 +1,4 @@
 import networkx as nx
-from networkx.classes.function import density
 import numpy as np
 import pprint as pp
 import random
@@ -169,7 +168,7 @@ def create_primary_edges(node_list):
                         edge_list.append(edge)
     return edge_list        
             
-def create_intersection_edges(node_list): # Creating MANUALY for 4 edges, may be I will automate later😪
+def create_intersection_edges(G, node_list): # Creating MANUALY for 4 edges, may be I will automate later😪
     edge_list = [
         ["I00", "O10"],
         ["I10", "O00"],
@@ -189,11 +188,16 @@ def create_intersection_edges(node_list): # Creating MANUALY for 4 edges, may be
     edge_list = [tuple(edge) for edge in edge_list]
     return edge_list
 
-def create_edges(node_list):
+def create_edges(G, node_list):
     primary_edge_list = create_primary_edges(node_list)
-    intersection_edge_list = create_intersection_edges(node_list)
+    intersection_edge_list = create_intersection_edges(G, node_list)
     edge_list = primary_edge_list + intersection_edge_list
     return edge_list
+
+def update_additional_attrs(G):
+        for node in G.nodes:
+            if G.degree[node] == 2:
+                nx.set_node_attributes(G, {node: True}, name="is_bridge")
 
 # DRAWING TOOLS 
 

@@ -29,7 +29,7 @@ class State(PrevState):
         self.sig_state = self.graph_state["edge_color"]
         self.flow_rates = self.graph_state["flow_rates"]
     
-    def new_state(self):
+    def incr_flow(self):
         for i, (type, alpha, flow_rate) in enumerate(zip(self.type, self.traf_state, self.flow_rates)):
             if type == "I":
                 alpha += flow_rate
@@ -37,6 +37,9 @@ class State(PrevState):
                     alpha = 1
             self.traf_state[i] = alpha
         self.graph_state["alpha"] = self.traf_state
+
+    def new_state(self):
+        self.incr_flow(self)
         return self.graph_state
 
     @classmethod
