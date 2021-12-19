@@ -4,3 +4,4 @@
 using conditionals
 => all the nodes must have all the attributes, if its irrelevant simply put none
 => Never use plurals for variables!! instead back it up by something very different yet understandable
+=> Consider Object Oriented Design for Self Contained Programs

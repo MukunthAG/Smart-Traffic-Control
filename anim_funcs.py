@@ -15,23 +15,19 @@ class PrevState:
         pass
 
     @classmethod
-    def read(self):
+    def read_previous(self):
         return self.prev_state
 
-class CurrentState:
+class State(PrevState):
     time = 0
-    graph_state = None
 
-    @classmethod
-    def fetch(self, t, G, graph_state):
+    def construct(self, t, G):
+        self.graph_state = self.read_previous()
         self.time = t
         self.type = get_nvalues(G, "type")
-        self.graph_state = graph_state
-        self.traf_state = graph_state["alpha"]
-        self.sig_state = graph_state["edge_color"]
-        self.flow_rates = graph_state["flow_rates"]
-        new_state = self.new_state(self)
-        return new_state
+        self.traf_state = self.graph_state["alpha"]
+        self.sig_state = self.graph_state["edge_color"]
+        self.flow_rates = self.graph_state["flow_rates"]
     
     def new_state(self):
         for i, (type, alpha, flow_rate) in enumerate(zip(self.type, self.traf_state, self.flow_rates)):
@@ -42,3 +38,10 @@ class CurrentState:
             self.traf_state[i] = alpha
         self.graph_state["alpha"] = self.traf_state
         return self.graph_state
+
+    @classmethod
+    def get_next(self, t, G):
+        self.construct(self, t, G)
+        new_state = self.new_state(self)
+        self.update(new_state)
+        return new_state

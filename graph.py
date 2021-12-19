@@ -9,11 +9,9 @@ from anim_funcs import *
 
 def frame_updater(t, G, anim_axes):
     anim_axes.clear()
-    graph_state = PrevState.read()
-    graph_state = CurrentState.fetch(t, G, graph_state)
+    graph_state = State.get_next(t, G)
     Draw(G, **graph_state)
     anim_axes.set_title("Time:{}".format(t))
-    PrevState.update(graph_state)
 
 # INITIALIZE GRAPH
 
@@ -36,7 +34,7 @@ graph_setup = {
     "font_size": 8
 }
 
-PrevState.update(graph_setup)
+State.update(graph_setup)
 
 # ANIMATE GRAPH
 
@@ -50,6 +48,7 @@ anim_setup = {
     "repeat": False
 }
 anim_data = animate(**anim_setup)
+# anim_data.save("Inflow_simul_10min.gif")
 
 # SHOW GRAPH
 
