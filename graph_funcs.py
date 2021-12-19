@@ -1,6 +1,8 @@
 import networkx as nx
+from networkx.classes.function import density
 import numpy as np
 import pprint as pp
+import random
 
 TEST_MODE = 0
 
@@ -11,6 +13,20 @@ def Range(start_num, end_num):
 
 def Pretty(any):
     return pp.pprint(any)
+
+def tuples_to_list(array_of_tuples):
+    array_of_list = []
+    for tuple in array_of_tuples:
+        _list = list(tuple)
+        array_of_list.append(_list)
+    return array_of_list
+
+def lists_to_tuple(array_of_lists):
+    array_of_tuple = []
+    for list in array_of_lists:
+        _tuple = tuple(list)
+        array_of_tuple.append(_tuple)
+    return array_of_tuple
 
 # CONSTRUCT GRAPH
 
@@ -47,7 +63,7 @@ def m_gen(m):
         "density": None,
         "opacity": 1,
         "node_size": 1000,
-        "flow_rate": None,
+        "flow_rate": 0,
         "is_bridge": False,
     }
     node = (node_attrs["name"], node_attrs)
@@ -64,7 +80,7 @@ def i_gen(m, l):
         "density": None,
         "opacity": 1,
         "node_size": 400,
-        "flow_rate": None,
+        "flow_rate": 0,
         "is_bridge": False
     }
     node = (node_attrs["name"], node_attrs)
@@ -81,17 +97,40 @@ def o_gen(m, l):
         "density": None,
         "opacity": 1,
         "node_size": 400,
-        "flow_rate": None,
+        "flow_rate": 0,
         "is_bridge": False
     }
     node = (node_attrs["name"], node_attrs)
     return node
 
-def assign_flow_rates():
-    pass
+def assign_flow_rates(node_list):
+    min = 200 # Vehicle per hour
+    max = 600
+    max_allowable_limit = 50 # Vehicles
+    node_list = tuples_to_list(node_list)
+    for node in node_list:
+        node_attr = node[1]
+        if node_attr["type"] == "I":
+            vph = random.randint(min, max)
+            vps = vph/3600
+            max_time = max_allowable_limit/vps
+            node_attr["flow_rate"] = 1/max_time # In opacity units
+            # Pretty((vph, vps, max_time, 1/max_time))
+            node[1] = node_attr
+    node_list = lists_to_tuple(node_list)
+    return node_list
 
-def init_densities():
-    pass
+def init_opacities(node_list):
+    node_list = tuples_to_list(node_list)
+    for node in node_list:
+        node_attr = node[1]
+        if node_attr["type"] == "I":
+            opacity = random.random()
+            node_attr["opacity"] = opacity
+            node[1] = node_attr
+            # Pretty((0, opacity, 1))
+    node_list = lists_to_tuple(node_list)
+    return node_list
 
 def create_nodes():
     node_list = [] # node element struct --> (node_name->str, node_attrs->dict)->tuple
@@ -100,6 +139,8 @@ def create_nodes():
         for l in range(0, NUM_OF_LANE_GROUPS):
             node_list.append(i_gen(m, l))
             node_list.append(o_gen(m, l))
+    node_list = assign_flow_rates(node_list)
+    node_list = init_opacities(node_list)
     return node_list
 
 # Create Edges
@@ -196,3 +237,4 @@ if TEST_MODE == 1:
     Pretty(create_primary_edges(node_list))
     Pretty(create_intersection_edges(node_list))
     Pretty(create_edges(node_list))
+    
