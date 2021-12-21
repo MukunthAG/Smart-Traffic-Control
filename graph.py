@@ -9,7 +9,7 @@ from anim_funcs import *
 
 def frame_updater(t, G, anim_axes):
     anim_axes.clear()
-    graph_state = State.get_next(t, G)
+    graph_state = State.get_next(t)
     Draw(G, **graph_state)
     anim_axes.set_title("Time:{}".format(t))
 
@@ -35,7 +35,7 @@ graph_setup = {
     "font_size": 8
 }
 
-State.update(graph_setup)
+State.initialize(G, graph_setup)
 
 # ANIMATE GRAPH
 
