@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 import pprint as pp
 import random
+from constants import *
 
 TEST_MODE = 0
 
@@ -105,7 +106,7 @@ def o_gen(m, l):
 def assign_flow_rates(node_list):
     min = 200 # Vehicle per hour
     max = 600
-    max_allowable_limit = 50 # Vehicles
+    max_allowable_limit = MAX_ALLOWABLE_LIMIT_ON_EACH_LANE
     node_list = tuples_to_list(node_list)
     for node in node_list:
         node_attr = node[1]
@@ -158,33 +159,48 @@ def create_primary_edges(node_list):
                     edge_attrs = {
                         "name": parent_name + node_name,
                         "color": "black",
+                        "type": "primary",
                         "width": assign_edge_width()
                     }
                     if node_attrs["type"] == "I":
+                        edge_attrs.update({
+                            "edge_start": node_name,
+                            "edge_end": parent_name 
+                        })
                         edge = (node_name, parent_name, edge_attrs)
                         edge_list.append(edge)
                     if node_attrs["type"] == "O":
+                        edge_attrs.update({
+                            "edge_start": parent_name,
+                            "edge_end": node_name 
+                        })
                         edge = (parent_name, node_name, edge_attrs)
                         edge_list.append(edge)
     return edge_list        
             
 def create_intersection_edges(node_list): # Creating MANUALY for 4 edges, may be I will automate later😪
     edge_list = [
-        ["I00", "O10"],
-        ["I10", "O00"],
-        ["I11", "O21"],
-        ["I21", "O11"],
-        ["I20", "O30"],
-        ["I30", "O20"],
-        ["I31", "O01"],
-        ["I01", "O31"]
+        ["O00", "I10"],
+        ["O10", "I00"],
+        ["O11", "I21"],
+        ["O21", "I11"],
+        ["O20", "I30"],
+        ["O30", "I20"],
+        ["O31", "I01"],
+        ["O01", "I31"]
     ]
     edge_attrs = { # IT WOULD BE BETTER IF EDGE ATTRIBUTES WHERE OUTSIDE
         "name": "Junc", # Need to generate, Pausing for now
         "color": "black",
+        "type": "intersection",
         "width": assign_edge_width()
     }
-    for edge in edge_list: edge.append(edge_attrs)
+    for edge in edge_list: 
+        edge_attrs.update({
+            "edge_start": edge[0], 
+            "edge_end": edge[1]
+        })
+        edge.append(edge_attrs)
     edge_list = [tuple(edge) for edge in edge_list]
     return edge_list
 

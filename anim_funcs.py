@@ -1,10 +1,7 @@
 import numpy as np
 import pprint as pp
 from graph_funcs import Pretty, get_nvalues, get_evalues
-
-FPS = 20
-FRAME_INTERVAL = 1000/FPS #ms
-TOTAL_FRAMES = 600 + 1
+from constants import *
 
 class PrevState:
     prev_state = None
@@ -20,23 +17,37 @@ class PrevState:
 
 class State(PrevState):
     time = 0
-
+    
     def construct(self, t, G):
         self.graph_state = self.read_previous()
         self.time = t
-        self.type = get_nvalues(G, "type")
+        self.G = G
+
+        # STATIC
+        self.node_book = [G.nodes[node] for node in G.nodes]
+        self.edge_book = [G.edges[edge] for edge in G.edges]
+        self.node_type = get_nvalues(G, "type")
+        self.edge_type = get_evalues(G, "type")
+        self.edge_start = get_evalues(G, "edge_start")
+        self.edge_end = get_evalues(G, "edge_end")
+
+        # DYNAMIC
         self.traf_state = self.graph_state["alpha"]
         self.sig_state = self.graph_state["edge_color"]
         self.flow_rates = self.graph_state["flow_rates"]
     
     def incr_flow(self):
-        for i, (type, alpha, flow_rate) in enumerate(zip(self.type, self.traf_state, self.flow_rates)):
+        for i, (type, alpha, flow_rate) in enumerate(zip(self.node_type, self.traf_state, self.flow_rates)):
             if type == "I":
                 alpha += flow_rate
                 if alpha > 1: 
                     alpha = 1
             self.traf_state[i] = alpha
         self.graph_state["alpha"] = self.traf_state
+    
+    def set_signals(self):
+        for i, (type, start_node, edge_color) in enumerate(zip(self.edge_type, self.edge_start, self.sig_state)):
+            pass
 
     def new_state(self):
         self.incr_flow(self)
