@@ -191,7 +191,7 @@ def create_intersection_edges(node_list): # Creating MANUALY for 4 edges, may be
     ]
     edge_attrs = { # IT WOULD BE BETTER IF EDGE ATTRIBUTES WHERE OUTSIDE
         "name": "Junc", # Need to generate, Pausing for now
-        "color": "black",
+        "color": "green",
         "type": "intersection",
         "width": assign_edge_width()
     }
