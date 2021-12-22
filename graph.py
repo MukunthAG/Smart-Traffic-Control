@@ -49,8 +49,9 @@ anim_setup = {
     "repeat": False
 }
 anim_data = animate(**anim_setup)
-# anim_data.save("Inflow_simul_10min.gif")
+anim_data.save("Basic_Model_simul_10min.gif")
 
 # SHOW GRAPH
 
 plt.show()
+

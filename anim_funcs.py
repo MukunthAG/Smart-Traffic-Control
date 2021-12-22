@@ -18,6 +18,9 @@ class State(PrevState):
 
     def construct(self, t):
         self.time = t
+        for node in self.node_book:
+            if node["type"] == "M":
+                node["time"] += 1
     
     def cook_state_from_books(self):
         self.state.update({
@@ -58,12 +61,10 @@ class State(PrevState):
            return True
         return False
         
-    def set_colors(self):
+    def set_colors(self, I_name):
         for node in self.node_book:
             I_group_id = self.get_attr_with_name(
-                self,
-                "group_id", 
-                self.largest_I_density_name
+                self, "group_id", I_name
             )
             if node["parent"] == self.parent_node_name:          
                 if (
@@ -77,7 +78,7 @@ class State(PrevState):
                                 self, edge, self.parent_node_name, node["name"])
                             ):
                             edge["color"] = "green"
-                            node["is_active"] = True
+                            node["triggered"] = True
                 else:
                     for edge in self.edge_book:
                         if (
@@ -85,25 +86,48 @@ class State(PrevState):
                                 self, edge, self.parent_node_name, node["name"])
                             ):
                             edge["color"] = "red"
-                            node["is_active"] = False
+                            node["triggered"] = False
 
-    def set_signals(self):
+    def change_phase(self):
         for node in self.node_book:
-            if node["type"] == "M":
+            if node["type"] == "M" and node["triggered"] == True:
                 self.parent_node_name = node["name"]
                 self.largest_I_density = -np.Inf
                 self.largest_I_density_name = None
                 for edge in self.edge_book:
                     if edge["edge_end"] == self.parent_node_name:
                         I_name = edge["edge_start"]
-                        I_density = self.get_attr_with_name(self, "opacity", I_name)
+                        I_density = self.get_attr_with_name(
+                            self, "opacity", I_name
+                        )
                         self.record_flows(self, I_density, I_name)
-                self.set_colors(self)
+                self.set_colors(self, self.largest_I_density_name)
+                node["active_node"] = self.largest_I_density_name
+                node["triggered"] = False
+
+    def trigger_check(self):
+        for node in self.node_book:
+            if node["type"] == "M":
+                active_node = node["active_node"]
+                active_density = self.get_attr_with_name(
+                    self, "opacity", active_node
+                )
+                if (
+                    active_density <= THRESHOLD_DENSITY_FOR_CLEARANCE 
+                    or 
+                    node["time"] >= TOLERATABLE_WAIT_TIME
+                   ):
+                    node["triggered"] = True
+                    node["time"] = 0              
+
+    def set_signals(self):
+        self.change_phase(self)
+        self.trigger_check(self)
     
     def release_flow(self): 
         for node in self.node_book:
             opacity = node["opacity"]
-            if node["type"] == "I" and node["is_active"] == True:
+            if node["type"] == "I" and node["triggered"] == True:
                 opacity -= RELEASE_RATE
                 if opacity < 0: opacity = 0
                 if opacity > 1: opacity = 1
