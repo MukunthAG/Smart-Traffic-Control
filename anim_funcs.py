@@ -77,6 +77,7 @@ class State(PrevState):
                                 self, edge, self.parent_node_name, node["name"])
                             ):
                             edge["color"] = "green"
+                            node["is_active"] = True
                 else:
                     for edge in self.edge_book:
                         if (
@@ -84,6 +85,7 @@ class State(PrevState):
                                 self, edge, self.parent_node_name, node["name"])
                             ):
                             edge["color"] = "red"
+                            node["is_active"] = False
 
     def set_signals(self):
         for node in self.node_book:
@@ -97,11 +99,21 @@ class State(PrevState):
                         I_density = self.get_attr_with_name(self, "opacity", I_name)
                         self.record_flows(self, I_density, I_name)
                 self.set_colors(self)
+    
+    def release_flow(self): 
+        for node in self.node_book:
+            opacity = node["opacity"]
+            if node["type"] == "I" and node["is_active"] == True:
+                opacity -= RELEASE_RATE
+                if opacity < 0: opacity = 0
+                if opacity > 1: opacity = 1
+            node["opacity"] = opacity
                 
     @classmethod
     def get_next(self, t):
         self.construct(self, t)
         self.incr_flow(self)
         self.set_signals(self)
+        self.release_flow(self)
         self.cook_state_from_books(self)
         return self.state

@@ -65,6 +65,7 @@ def m_gen(m):
         "node_size": 1000,
         "flow_rate": 0,
         "is_bridge": False,
+        "is_active": False
     }
     node = (node_attrs["name"], node_attrs)
     return node
@@ -81,7 +82,8 @@ def i_gen(m, l):
         "opacity": 1,
         "node_size": 400,
         "flow_rate": 0,
-        "is_bridge": False
+        "is_bridge": False,
+        "is_active": False
     }
     node = (node_attrs["name"], node_attrs)
     return node
@@ -98,7 +100,8 @@ def o_gen(m, l):
         "opacity": 1,
         "node_size": 400,
         "flow_rate": 0,
-        "is_bridge": False
+        "is_bridge": False,
+        "is_active": False
     }
     node = (node_attrs["name"], node_attrs)
     return node
@@ -115,7 +118,7 @@ def assign_flow_rates(node_list):
             vps = vph/3600
             max_time = max_allowable_limit/vps
             node_attr["flow_rate"] = 1/max_time # In opacity units
-            # Pretty((vph, vps, max_time, 1/max_time))
+            Pretty((vph, vps, max_time, 1/max_time))
             node[1] = node_attr
     node_list = lists_to_tuple(node_list)
     return node_list
@@ -146,7 +149,7 @@ def create_nodes():
 # Create Edges
 
 def assign_edge_width():
-    return 1
+    return 2
 
 def create_primary_edges(node_list):
     edge_list = []
