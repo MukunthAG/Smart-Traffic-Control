@@ -49,7 +49,7 @@ anim_setup = {
     "repeat": False
 }
 anim_data = animate(**anim_setup)
-anim_data.save("Basic_Model_simul_10min.gif")
+# anim_data.save("name.gif")
 
 # SHOW GRAPH
 

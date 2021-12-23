@@ -1,7 +1,0 @@
-=> a tuple cannot contain a single value like (x) ---> NOT tuple
-=> using nx.draw, opacities only take numeric values, use nx.draw_network_nodes instead
-=> handle the attribute arrays directly and update only them as they capture all the info, and can be easily read 
-using conditionals
-=> all the nodes must have all the attributes, if its irrelevant simply put none
-=> Never use plurals for variables!! instead back it up by something very different yet understandable
-=> Consider Object Oriented Design for Self Contained Programs

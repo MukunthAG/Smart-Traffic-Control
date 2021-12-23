@@ -1,2 +1,0 @@
-=> Automate intersection edge creation, so that more no. of intersection can be added
-=> Test all the layouts for good lookeryness

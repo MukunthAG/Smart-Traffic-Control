@@ -22,12 +22,6 @@ class State(PrevState):
             if node["type"] == "M":
                 node["time"] += 1
     
-    def cook_state_from_books(self):
-        self.state.update({
-            "alpha": [node["opacity"] for node in self.node_book],
-            "edge_color": [edge["color"] for edge in self.edge_book]
-        })
-
     def incr_flow(self):
         for node in self.node_book:
             opacity = node["opacity"]
@@ -36,57 +30,24 @@ class State(PrevState):
                 if opacity > 1: opacity = 1
             node["opacity"] = opacity
     
-    def record_flows(self, I_density, I_name):
-        if I_density > self.largest_I_density:
-            self.largest_I_density = I_density
-            self.largest_I_density_name = I_name
+    def set_signals(self):
+        self.change_phase(self)
+        self.trigger_check(self)
     
-    def get_attr_with_name(self, attr, name):
-        node_attr = None 
+    def release_flow(self): 
         for node in self.node_book:
-            if node["name"] == name:
-                node_attr = node[attr]
-        return node_attr
+            opacity = node["opacity"]
+            if node["type"] == "I" and node["triggered"] == True:
+                opacity -= RELEASE_RATE
+                if opacity < 0: opacity = 0
+                if opacity > 1: opacity = 1
+            node["opacity"] = opacity
     
-    def edge_is_between(self, edge, n1, n2):
-        if (
-            edge["edge_start"] == n1 and
-            edge["edge_end"] == n2
-           ):
-           return True
-        if (
-            edge["edge_start"] == n2 and
-            edge["edge_end"] == n1
-           ): 
-           return True
-        return False
-        
-    def set_colors(self, I_name):
-        for node in self.node_book:
-            I_group_id = self.get_attr_with_name(
-                self, "group_id", I_name
-            )
-            if node["parent"] == self.parent_node_name:          
-                if (
-                    (node["group_id"] == I_group_id and node["type"] == "I") 
-                        or 
-                    (node["group_id"] != I_group_id and node["type"] == "O")
-                   ):
-                    for edge in self.edge_book:
-                        if (
-                            self.edge_is_between(
-                                self, edge, self.parent_node_name, node["name"])
-                            ):
-                            edge["color"] = "green"
-                            node["triggered"] = True
-                else:
-                    for edge in self.edge_book:
-                        if (
-                            self.edge_is_between(
-                                self, edge, self.parent_node_name, node["name"])
-                            ):
-                            edge["color"] = "red"
-                            node["triggered"] = False
+    def cook_state_from_books(self):
+        self.state.update({
+            "alpha": [node["opacity"] for node in self.node_book],
+            "edge_color": [edge["color"] for edge in self.edge_book]
+        })
 
     def change_phase(self):
         for node in self.node_book:
@@ -118,21 +79,60 @@ class State(PrevState):
                     node["time"] >= TOLERATABLE_WAIT_TIME
                    ):
                     node["triggered"] = True
-                    node["time"] = 0              
+                    node["time"] = 0  
 
-    def set_signals(self):
-        self.change_phase(self)
-        self.trigger_check(self)
-    
-    def release_flow(self): 
+    def get_attr_with_name(self, attr, name):
+        node_attr = None 
         for node in self.node_book:
-            opacity = node["opacity"]
-            if node["type"] == "I" and node["triggered"] == True:
-                opacity -= RELEASE_RATE
-                if opacity < 0: opacity = 0
-                if opacity > 1: opacity = 1
-            node["opacity"] = opacity
-                
+            if node["name"] == name:
+                node_attr = node[attr]
+        return node_attr    
+
+    def record_flows(self, I_density, I_name):
+        if I_density > self.largest_I_density:
+            self.largest_I_density = I_density
+            self.largest_I_density_name = I_name
+    
+    def set_colors(self, I_name):
+        for node in self.node_book:
+            I_group_id = self.get_attr_with_name(
+                self, "group_id", I_name
+            )
+            if node["parent"] == self.parent_node_name:          
+                if (
+                    (node["group_id"] == I_group_id and node["type"] == "I") 
+                        or 
+                    (node["group_id"] != I_group_id and node["type"] == "O")
+                   ):
+                    for edge in self.edge_book:
+                        if (
+                            self.edge_is_between(
+                                self, edge, self.parent_node_name, node["name"])
+                            ):
+                            edge["color"] = "green"
+                            node["triggered"] = True
+                else:
+                    for edge in self.edge_book:
+                        if (
+                            self.edge_is_between(
+                                self, edge, self.parent_node_name, node["name"])
+                            ):
+                            edge["color"] = "red"
+                            node["triggered"] = False       
+    
+    def edge_is_between(self, edge, n1, n2):
+        if (
+            edge["edge_start"] == n1 and
+            edge["edge_end"] == n2
+           ):
+           return True
+        if (
+            edge["edge_start"] == n2 and
+            edge["edge_end"] == n1
+           ): 
+           return True
+        return False
+ 
     @classmethod
     def get_next(self, t):
         self.construct(self, t)
